@@ -149,8 +149,12 @@
       if (data.status !== "ok") {
         throw new Error(`OPA 服务已启动，但模型状态为 ${data.status || "未知"}`);
       }
-      if (endpoint.includes("/api/modelarts/") && !data.modelarts?.configured) {
-        throw new Error("ModelArts APP_CODE 未配置，请在后端 .env 中设置 MODELARTS_APP_CODE");
+      const modelArtsConfigured =
+        data.modelarts?.configured ?? data.configured;
+      if (endpoint.includes("/api/modelarts/") && modelArtsConfigured !== true) {
+        throw new Error(
+          "ModelArts APP_CODE 未配置，请在公网代理的环境变量中设置 MODELARTS_APP_CODE",
+        );
       }
       return data;
     } catch (error) {
